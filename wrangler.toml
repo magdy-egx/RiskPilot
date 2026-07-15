@@ -1,0 +1,6 @@
+name = "anagemen"
+compatibility_date = "2026-07-15"
+
+# This tells Cloudflare this is a static site (no build needed)
+[site]
+bucket = "."
