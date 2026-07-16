@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🤖 تحليل الذكاء الاصطناعي - حاسبة إدارة المخاطر</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0ea5e9; --primary-dark: #0284c7; --primary-light: #7dd3fc;
+  --success: #22c55e; --success-dark: #16a34a; --success-light: #86efac;
+  --danger: #f43f5e; --danger-dark: #e11d48; --danger-light: #fda4af;
+  --warning: #f59e0b; --warning-dark: #d97706; --warning-light: #fcd34d;
+  --info: #6366f1; --info-dark: #4f46e5; --info-light: #a5b4fc;
+  --bg-dark: #0b0f19; --bg-darker: #070a12; --bg-card: #111827; --bg-card-hover: #1a2234;
+  --bg-input: #1e293b; --bg-input-focus: #273449;
+  --text: #ffffff; --text-bright: #f8fafc; --text-light: #e2e8f0; --text-muted: #94a3b8; --text-dim: #64748b;
+  --border: #334155; --border-light: #475569;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4); --shadow-md: 0 8px 30px rgba(0,0,0,0.5);
+  --shadow-glow: 0 0 25px rgba(14,165,233,0.15);
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 20px;
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { font-size:16px; }
+body { font-family:'Cairo',sans-serif; background: var(--bg-dark); color:var(--text); min-height:100vh; padding:12px; line-height:1.7; overflow-x:hidden; }
+.container { max-width:900px; margin:0 auto; width:100%; }
+
+.header { text-align:center; margin-bottom:24px; padding:28px 20px; background: linear-gradient(135deg, #0c4a6e 0%, #075985 30%, var(--primary-dark) 60%, #0369a1 100%); border-radius:var(--radius-xl); box-shadow: var(--shadow-glow), var(--shadow-md); position:relative; overflow:hidden; border: 1px solid rgba(14,165,233,0.2); }
+.header h1 { font-size: clamp(1.4rem, 4.5vw, 2.1rem); font-weight:800; margin-bottom:8px; color: #ffffff; text-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+.header p { color: var(--primary-light); font-size: clamp(0.85rem, 2.5vw, 1rem); font-weight:600; }
+.back-link { display:inline-block; margin-top:15px; color: var(--primary-light); text-decoration:none; font-weight:700; font-size:0.95rem; }
+.back-link:hover { color: #ffffff; }
+
+.card { background:var(--bg-card); border-radius:var(--radius-lg); padding: clamp(18px, 3vw, 28px); margin-bottom:18px; border:1px solid var(--border); box-shadow: var(--shadow-sm); }
+.card-title { font-size: clamp(1.1rem, 3vw, 1.3rem); font-weight:800; margin-bottom:20px; display:flex; align-items:center; gap:10px; color:var(--text-bright); }
+
+.form-group { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.form-group label { font-weight:700; color:var(--text-light); font-size: 0.95rem; }
+.form-group textarea, .form-group input { background:var(--bg-input); border:2px solid var(--border); color:var(--text); padding:14px 16px; border-radius:var(--radius-md); font-size: 1rem; font-family:'Cairo',sans-serif; transition:var(--transition); width:100%; resize:vertical; }
+.form-group textarea:focus, .form-group input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(14,165,233,0.15); background: var(--bg-input-focus); }
+.form-group textarea { min-height:120px; }
+
+.btn { padding:14px 28px; border:none; border-radius:var(--radius-md); font-family:'Cairo',sans-serif; font-size: 1rem; font-weight:800; cursor:pointer; transition:var(--transition); display:inline-flex; align-items:center; justify-content:center; gap:10px; width:100%; text-decoration:none; }
+@media(min-width:640px){ .btn { width:auto; } }
+.btn-primary { background:linear-gradient(135deg, var(--primary), var(--primary-dark)); color:#ffffff; box-shadow:0 4px 20px rgba(14,165,233,0.35); }
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(14,165,233,0.45); }
+.btn-primary:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+.btn-secondary { background:linear-gradient(135deg, #475569, #334155); color:#ffffff; }
+
+.chat-container { background:var(--bg-input); border-radius:var(--radius-md); padding:20px; min-height:300px; max-height:500px; overflow-y:auto; border:2px solid var(--border); margin-bottom:20px; }
+.message { margin-bottom:16px; padding:14px 18px; border-radius:var(--radius-md); max-width:85%; word-wrap:break-word; line-height:1.8; }
+.message.user { background:linear-gradient(135deg, var(--primary-dark), var(--primary)); color:#ffffff; margin-left:auto; text-align:right; }
+.message.ai { background:var(--bg-card); color:var(--text-light); border:1px solid var(--border-light); margin-right:auto; text-align:right; }
+.message.ai strong { color:var(--primary-light); }
+.message.ai .loading { display:flex; align-items:center; gap:8px; color:var(--text-muted); }
+.dot { width:8px; height:8px; background:var(--primary); border-radius:50%; animation:bounce 1.4s infinite ease-in-out both; }
+.dot:nth-child(1) { animation-delay:-0.32s; }
+.dot:nth-child(2) { animation-delay:-0.16s; }
+@keyframes bounce { 0%,80%,100%{transform:scale(0);} 40%{transform:scale(1);} }
+
+.status-bar { display:flex; align-items:center; gap:10px; padding:10px 16px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); border-radius:var(--radius-md); margin-bottom:20px; }
+.status-bar.online { color:var(--success-light); }
+.status-bar.offline { color:var(--danger-light); background:rgba(244,63,94,0.1); border-color:rgba(244,63,94,0.3); }
+.status-dot { width:10px; height:10px; border-radius:50%; background:var(--success); animation:pulse 2s infinite; }
+@keyframes pulse { 0%{opacity:1;} 50%{opacity:0.5;} 100%{opacity:1;} }
+
+.footer { text-align:center; padding:20px; color:var(--text-muted); font-size: 0.9rem; margin-top:20px; border-top:1px solid var(--border); }
+
+.suggestion-chips { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
+.chip { background:var(--bg-input); border:1px solid var(--border); color:var(--text-light); padding:8px 16px; border-radius:20px; font-size:0.85rem; cursor:pointer; transition:var(--transition); }
+.chip:hover { background:var(--primary-dark); border-color:var(--primary); color:#ffffff; }
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<div class="container">
+
+<div class="header">
+  <h1>🤖 تحليل الذكاء الاصطناعي</h1>
+  <p>اسأل AI عن تحليل الأسهم، إدارة المخاطر، واستراتيجيات التداول</p>
+  <a href="/" class="back-link">⬅️ العودة لحاسبة إدارة المخاطر</a>
+</div>
+
+<div class="card">
+  <div class="status-bar online" id="statusBar">
+    <span class="status-dot"></span>
+    <span>AI متصل وجاهز للتحليل</span>
+  </div>
+
+  <div class="chat-container" id="chatContainer">
+    <div class="message ai">
+      <strong>👋 مرحباً!</strong><br>
+      أنا مساعدك الذكي لتحليل الأسهم وإدارة المخاطر. يمكنك سؤالي عن:<br>
+      • تحليل أي سهم في البورصة المصرية<br>
+      • تقييم مخاطر صفقة محددة<br>
+      • نصائح لإدارة المحفظة<br>
+      • استراتيجيات دخول وخروج
+    </div>
+  </div>
+
+  <div class="suggestion-chips">
+    <span class="chip" onclick="setQuestion('حلل لي سهم COMI')">📊 تحليل COMI</span>
+    <span class="chip" onclick="setQuestion('ما هي نسبة المخاطرة المثالية؟')">⚖️ نسبة المخاطرة</span>
+    <span class="chip" onclick="setQuestion('نصائح لإدارة المحفظة')">💼 إدارة المحفظة</span>
+    <span class="chip" onclick="setQuestion('استراتيجية وقف الخسارة')">🛑 وقف الخسارة</span>
+  </div>
+
+  <div class="form-group">
+    <label>📝 سؤالك:</label>
+    <textarea id="userInput" placeholder="اكتب سؤالك هنا... مثال: حلل لي سهم COMI وهل هو مناسب للشراء الآن؟"></textarea>
+  </div>
+
+  <div style="display:flex; gap:12px; flex-wrap:wrap;">
+    <button class="btn btn-primary" id="sendBtn" onclick="sendMessage()">📤 إرسال</button>
+    <button class="btn btn-secondary" onclick="clearChat()">🗑️ مسح المحادثة</button>
+  </div>
+</div>
+
+<div class="footer">حاسبة إدارة المخاطر - تحليل فني شامل | 1.msr7oodar.workers.dev</div>
+
+</div>
+
+<script>
+const chatContainer = document.getElementById('chatContainer');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const statusBar = document.getElementById('statusBar');
+
+function setQuestion(text) {
+  userInput.value = text;
+  userInput.focus();
+}
+
+function addMessage(text, isUser) {
+  const msg = document.createElement('div');
+  msg.className = 'message ' + (isUser ? 'user' : 'ai');
+  msg.innerHTML = text;
+  chatContainer.appendChild(msg);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function showLoading() {
+  const msg = document.createElement('div');
+  msg.className = 'message ai';
+  msg.id = 'loadingMsg';
+  msg.innerHTML = '<div class="loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>جاري التحليل...</span></div>';
+  chatContainer.appendChild(msg);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function hideLoading() {
+  const loading = document.getElementById('loadingMsg');
+  if (loading) loading.remove();
+}
+
+async function sendMessage() {
+  const text = userInput.value.trim();
+  if (!text) return;
+
+  addMessage(text, true);
+  userInput.value = '';
+  sendBtn.disabled = true;
+  showLoading();
+
+  try {
+    const response = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    });
+
+    hideLoading();
+
+    if (!response.ok) {
+      throw new Error('Network error');
+    }
+
+    const data = await response.json();
+
+    if (data.error) {
+      addMessage('❌ <strong>خطأ:</strong> ' + data.error, false);
+    } else {
+      addMessage(data.reply, false);
+    }
+  } catch (err) {
+    hideLoading();
+    addMessage('❌ <strong>عذراً:</strong> حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.<br><small style="color:var(--text-muted)">' + err.message + '</small>', false);
+    statusBar.className = 'status-bar offline';
+    statusBar.innerHTML = '<span style="width:10px;height:10px;border-radius:50%;background:var(--danger);"></span><span>AI غير متصل - تحقق من الاتصال</span>';
+  }
+
+  sendBtn.disabled = false;
+}
+
+function clearChat() {
+  if (confirm('هل تريد مسح المحادثة؟')) {
+    chatContainer.innerHTML = '<div class="message ai"><strong>👋 مرحباً!</strong><br>أنا مساعدك الذكي لتحليل الأسهم وإدارة المخاطر.</div>';
+  }
+}
+
+userInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+</script>
+
+</body>
+</html>
